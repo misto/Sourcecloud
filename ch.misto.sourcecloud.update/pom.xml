@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>ch.misto.sourcecloud</artifactId>
+		<groupId>ch.misto.sourcecloud</groupId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>ch.misto.sourcecloud.update</artifactId>
+	<packaging>eclipse-update-site</packaging>
+	<name>ch.misto.sourcecloud Update Site</name>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.sonatype.tycho</groupId>
+				<artifactId>maven-osgi-packaging-plugin</artifactId>
+				<configuration>
+					<metadataRepositoryName>ch.misto.sourcecloud Plugin</metadataRepositoryName>
+					<artifactRepositoryName>ch.misto.sourcecloud Plugin</artifactRepositoryName>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>src/main/assembly/assembly.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

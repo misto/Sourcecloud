@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            allowMultiple="true"
+            class="org.eclipse.zest.examples.cloudio.application.ui.TagCloudViewPart"
+            id="ch.misto.sourcecloud.core.view1"
+            name="Source Cloud"
+            restorable="true">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="true"
+            id="ch.misto.sourcecloud.core.contribution.open"
+            objectClass="org.eclipse.core.resources.IResource">
+         <action
+               class="ch.misto.sourcecloud.core.OpenWithCloudio"
+               id="ch.misto.sourcecloud.core.openaction1"
+               label="Create Tag Cloud">
+         </action>
+      </objectContribution>
+   </extension>
+
+</plugin>

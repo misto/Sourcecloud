@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/ch.misto.sourcecloud.feature_1.0.0.qualifier.jar" id="ch.misto.sourcecloud.feature" version="1.0.0.qualifier">
+      <category name="ch.misto.sourcecloud.category"/>
+   </feature>
+   <category-def name="ch.misto.sourcecloud.category" label="Sourcecloud"/>
+</site>
