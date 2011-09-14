@@ -13,7 +13,7 @@
   </prerequisites>
 
   <properties>
-    <java.version>1.5</java.version>
+    <java.version>1.6</java.version>
   	<maven.version>3.0</maven.version>
   	<tycho.version>0.11.0</tycho.version>
   	<tycho.test.jvmArgs>-Xmx512m -XX:MaxPermSize=256m</tycho.test.jvmArgs>
