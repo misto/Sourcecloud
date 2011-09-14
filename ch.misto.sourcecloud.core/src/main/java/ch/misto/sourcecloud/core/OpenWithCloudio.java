@@ -29,7 +29,7 @@ import org.eclipse.zest.examples.cloudio.application.ui.TagCloudViewPart;
 
 public class OpenWithCloudio implements IObjectActionDelegate {
 
-  private static final Pattern PATTERN = Pattern.compile("[a-zA-Z]+");
+  private static final Pattern PATTERN = Pattern.compile("\\w+");
 
   private static Map<String, Integer> extractWordsFromFiles(
       final ArrayList<IFile> files, final IProgressMonitor pm) {
@@ -38,8 +38,7 @@ public class OpenWithCloudio implements IObjectActionDelegate {
     for (IFile f : files) {
 
       if (!pm.isCanceled()) {
-        stats.putAll(reduce(findWordsInFile(f)));
-
+        reduce(findWordsInFile(f), stats);
         pm.worked(1);
       }
     }
@@ -90,7 +89,9 @@ public class OpenWithCloudio implements IObjectActionDelegate {
       }
 
     } catch (CoreException e) {
+      e.printStackTrace();
     } catch (IOException e) {
+      e.printStackTrace();
     }
     return words;
   }
@@ -105,13 +106,10 @@ public class OpenWithCloudio implements IObjectActionDelegate {
     return types;
   }
 
-  private static Map<String, Integer> reduce(final ArrayList<String> words) {
-    final Map<String, Integer> stats = new HashMap<String, Integer>();
-
+  private static void reduce(final ArrayList<String> words, final Map<String, Integer> stats) {
     for (String w : words) {
       stats.put(w, (stats.containsKey(w) ? stats.get(w) : 0) + 1);
     }
-    return stats;
   }
 
   private static void showInView(final IProgressMonitor pm,
@@ -119,7 +117,7 @@ public class OpenWithCloudio implements IObjectActionDelegate {
     try {
       IViewPart view = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
           .getActivePage().showView("ch.misto.sourcecloud.core.view1");
-
+      
       ((TagCloudViewPart) view).getViewer().setInput(types, pm);
 
     } catch (Exception e) {

@@ -9,6 +9,8 @@
 package org.eclipse.zest.examples.cloudio.application.ui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -96,7 +98,16 @@ public class TagCloudViewPart extends ViewPart {
 
       @Override
       public Object[] getElements(Object inputElement) {
-        return ((List<?>) inputElement).toArray();
+        Type[] types = ((List<?>) inputElement).toArray(new Type[0]);
+        Arrays.sort(types, new Comparator<Type>() {
+
+          @Override
+          public int compare(Type o1, Type o2) {
+            return o2.getOccurrences() - o1.getOccurrences();
+          }
+        });
+
+        return types;
       }
     });
     createSideTab(sash);
