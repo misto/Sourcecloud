@@ -8,6 +8,7 @@ based tag cloud visualization for Zest. The font size indicates how often a word
 occurs in the source code.
 
 Some examples can be found in the examples directory:
+
 * [Scala Refactoring source code.](https://github.com/misto/Sourcecloud/blob/master/examples/refactorings.png)
 * [Simple Lambda Calculus parser and evaluato.r](https://github.com/misto/Sourcecloud/blob/master/examples/untyped.png)
 
