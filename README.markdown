@@ -7,8 +7,9 @@ It makes heavy use of
 based tag cloud visualization for Zest. The font size indicates how often a word
 occurs in the source code.
 
-Some examples can be found in the examples directory:
+Here are some examples:
 
+* [Debug Visualisation Plugin for Eclipse](http://cubussapiens.hu/2011/09/source-code-visualisation-for-my-projects/)
 * [Scala Refactoring source code.](https://github.com/misto/Sourcecloud/blob/master/examples/refactorings.png)
 * [Simple Lambda Calculus parser and evaluato.r](https://github.com/misto/Sourcecloud/blob/master/examples/untyped.png)
 
