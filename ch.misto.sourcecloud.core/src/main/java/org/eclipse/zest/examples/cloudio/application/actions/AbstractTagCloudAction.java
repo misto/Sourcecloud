@@ -42,11 +42,6 @@ public abstract class AbstractTagCloudAction implements IWorkbenchWindowActionDe
 	public Shell getShell() {
 		return shell;
 	}
-	
-
-	protected TagCloudViewer getViewer() {
-		return tcViewPart.getViewer();
-	}
 
 
 }

@@ -13,244 +13,172 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipse.zest.cloudio.CloudOptionsComposite;
 import org.eclipse.zest.cloudio.TagCloud;
 import org.eclipse.zest.cloudio.TagCloudViewer;
+import org.eclipse.zest.cloudio.Word;
 import org.eclipse.zest.cloudio.layout.DefaultLayouter;
 import org.eclipse.zest.cloudio.layout.ILayouter;
 import org.eclipse.zest.examples.cloudio.application.data.Type;
 
-/**
- * 
- * @author sschwieb
- * 
- */
 public class TagCloudViewPart extends ViewPart {
 
-  private TagCloudViewer viewer;
-  private TypeLabelProvider labelProvider;
-  private CloudOptionsComposite options;
-  private ILayouter layouter;
+	private TagCloudViewer viewer1;
+	private TagCloudViewer viewer2;
+	private TagCloudViewer viewer3;
+	private TagCloud cloud;
+	private TypeLabelProvider labelProvider;
 
-  public TagCloudViewPart() {
-  }
+	public TagCloudViewPart() {
+	}
 
-  @Override
-  public void createPartControl(Composite parent) {
-    SashForm sash = new SashForm(parent, SWT.HORIZONTAL);
-    sash.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-    Composite cloudComp = new Composite(sash, SWT.NONE);
-    cloudComp.setLayout(new GridLayout());
-    cloudComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-    TagCloud cloud = new TagCloud(cloudComp, SWT.HORIZONTAL | SWT.VERTICAL);
-    cloud.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-    viewer = new TagCloudViewer(cloud);
+	@Override
+	public void createPartControl(Composite parent) {
+		Composite cloudComp = new Composite(parent, SWT.NONE);
+		GridLayout layout = new GridLayout();
+		layout.numColumns = 3;
+		layout.horizontalSpacing = 0;
+		cloudComp.setLayout(layout);
 
-    layouter = new DefaultLayouter(20, 10);
-    viewer.setLayouter(layouter);
-    labelProvider = new TypeLabelProvider();
-    viewer.setLabelProvider(labelProvider);
-    viewer.setContentProvider(new IStructuredContentProvider() {
+		final ArrayList<Type> types = new ArrayList<Type>();
+		types.add(new Type(
+				"Use 'Create Tag Cloud' from the context menu to populate.", 1));
 
-      @Override
-      public void inputChanged(Viewer v, Object oldInput, Object newInput) {
-        List<?> list = (List<?>) newInput;
-        if (list == null || list.size() == 0)
-          return;
+//		cloud = new TagCloud(cloudComp, SWT.NONE);
+//		cloud.setLayouter(new DefaultLayouter(20, 10));
+//		labelProvider = new TypeLabelProvider() {
+//			{
+//				setColors(Arrays.asList(new RGB(1, 175, 255), new RGB(57, 99,
+//						213), new RGB(21, 49, 213), new RGB(30, 125, 42)));
+//				setFonts(Arrays.asList(cloud.getFont().getFontData()[0]));
+//			}
+//		};
+		
+		 viewer1 = createViewer(cloudComp);
+		 viewer2 = createViewer(cloudComp);
+		 viewer3 = createViewer(cloudComp);
+		 setInput(types, new NullProgressMonitor());
+	}
 
-        int max = Integer.MIN_VALUE, min = Integer.MAX_VALUE;
+	private Word createWord(final TypeLabelProvider labelProvider, String name, int occurrences) {
+		Type element = new Type(name, occurrences);
+		Word word = new Word(labelProvider.getLabel(element));
+		word.setColor(labelProvider.getColor(element));
+		word.weight = labelProvider.getWeight(element);
+		word.setFontData(labelProvider.getFontData(element));
+		word.angle = labelProvider.getAngle(element);
+		word.data = element;
+		return word;
+	}
 
-        for (Object o : list) {
-          int occurrences = ((Type) o).getOccurrences();
-          if (occurrences > max) {
-            max = occurrences;
-          } else if (occurrences < min) {
-            min = occurrences;
-          }
-        }
+	private static TagCloudViewer createViewer(Composite parent) {
+		TagCloud cloud = new TagCloud(parent, SWT.NONE);
+		final TagCloudViewer viewer = new TagCloudViewer(cloud);
 
-        labelProvider.setMaxOccurrences(max);
-        labelProvider.setMinOccurrences(min);
-      }
+		cloud.setLayouter(new DefaultLayouter(20, 10));
+		final TypeLabelProvider labelProvider = new TypeLabelProvider();
+		viewer.setLabelProvider(labelProvider);
+		viewer.setContentProvider(new IStructuredContentProvider() {
 
-      @Override
-      public void dispose() {
+			@Override
+			public void inputChanged(Viewer v, Object oldInput, Object newInput) {
+				List<?> list = (List<?>) newInput;
+				if (list == null || list.size() == 0)
+					return;
 
-      }
+				int max = Integer.MIN_VALUE, min = Integer.MAX_VALUE;
 
-      @Override
-      public Object[] getElements(Object inputElement) {
-        Type[] types = ((List<?>) inputElement).toArray(new Type[0]);
-        Arrays.sort(types, new Comparator<Type>() {
+				for (Object o : list) {
+					int occurrences = ((Type) o).getOccurrences();
+					if (occurrences > max) {
+						max = occurrences;
+					} else if (occurrences < min) {
+						min = occurrences;
+					}
+				}
 
-          @Override
-          public int compare(Type o1, Type o2) {
-            return o2.getOccurrences() - o1.getOccurrences();
-          }
-        });
+				labelProvider.setMaxOccurrences(max);
+				labelProvider.setMinOccurrences(min);
+			}
 
-        return types;
-      }
-    });
-    createSideTab(sash);
+			@Override
+			public void dispose() {
 
-    cloud.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-    viewer.getCloud().addControlListener(new ControlListener() {
+			}
 
-      @Override
-      public void controlResized(ControlEvent e) {
-        viewer.getCloud().zoomFit();
-      }
+			@Override
+			public Object[] getElements(Object inputElement) {
+				Type[] types = ((List<?>) inputElement).toArray(new Type[0]);
+				Arrays.sort(types, new Comparator<Type>() {
 
-      @Override
-      public void controlMoved(ControlEvent e) {
-      }
-    });
-    final ArrayList<Type> types = new ArrayList<Type>();
-    types.add(new Type(
-        "Use 'Create Tag Cloud' from the context menu to populate.", 1));
-    viewer.getCloud().setMaxFontSize(100);
-    viewer.getCloud().setMinFontSize(15);
-    labelProvider.setColors(options.getColors());
-    labelProvider.setFonts(options.getFonts());
-    sash.setWeights(new int[] { 72, 28 });
-    viewer.setInput(types, new NullProgressMonitor());
-  }
+					@Override
+					public int compare(Type o1, Type o2) {
+						return - /* descending! */(o1.getOccurrences() - o2
+								.getOccurrences());
+					}
+				});
 
-  private void createSideTab(SashForm form) {
-    Composite parent = new Composite(form, SWT.NONE);
-    parent.setLayout(new GridLayout());
-    parent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-    options = new CloudOptionsComposite(parent, SWT.NONE, viewer) {
+				return types;
+			}
+		});
 
-      protected Group addLayoutButtons(Composite parent) {
-        Group buttons = super.addLayoutButtons(parent);
+		cloud.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		cloud.addControlListener(new ControlListener() {
 
-        Label l = new Label(buttons, SWT.NONE);
-        l.setText("X Axis Variation");
-        final Combo xAxis = new Combo(buttons, SWT.DROP_DOWN | SWT.READ_ONLY);
-        xAxis.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-        xAxis.setItems(new String[] { "0", "10", "20", "30", "40", "50", "60",
-            "70", "80", "90", "100" });
-        xAxis.select(2);
-        xAxis.addSelectionListener(new SelectionListener() {
+			@Override
+			public void controlResized(ControlEvent e) {
+				viewer.getCloud().zoomFit();
+			}
 
-          @Override
-          public void widgetSelected(SelectionEvent e) {
-            String item = xAxis.getItem(xAxis.getSelectionIndex());
-            layouter.setOption(DefaultLayouter.X_AXIS_VARIATION,
-                Integer.parseInt(item));
+			@Override
+			public void controlMoved(ControlEvent e) {
+			}
+		});
 
-          }
+		cloud.setMaxFontSize(100);
+		cloud.setMinFontSize(15);
+		labelProvider.setColors(Arrays.asList(new RGB(1, 175, 255), new RGB(57,
+				99, 213), new RGB(21, 49, 213), new RGB(30, 125, 42)));
+		labelProvider.setFonts(Arrays.asList(cloud.getFont().getFontData()[0]));
+		viewer.setMaxWords(50);
+		return viewer;
+	}
 
-          @Override
-          public void widgetDefaultSelected(SelectionEvent e) {
-          }
-        });
+	@Override
+	public void setFocus() {
+		//viewer1.getCloud().setFocus();
+	}
 
-        l = new Label(buttons, SWT.NONE);
-        l.setText("Y Axis Variation");
-        final Combo yAxis = new Combo(buttons, SWT.DROP_DOWN | SWT.READ_ONLY);
-        yAxis.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-        yAxis.setItems(new String[] { "0", "10", "20", "30", "40", "50", "60",
-            "70", "80", "90", "100" });
-        yAxis.select(1);
-        yAxis.addSelectionListener(new SelectionListener() {
+	@Override
+	public void dispose() {
+		//viewer1.getCloud().dispose();
+		// labelProvider.dispose();
+	}
 
-          @Override
-          public void widgetSelected(SelectionEvent e) {
-            String item = yAxis.getItem(yAxis.getSelectionIndex());
-            layouter.setOption(DefaultLayouter.Y_AXIS_VARIATION,
-                Integer.parseInt(item));
-          }
+	public void setInput(ArrayList<Type> types, IProgressMonitor pm) {
 
-          @Override
-          public void widgetDefaultSelected(SelectionEvent e) {
-          }
-        });
-
-        Button run = new Button(buttons, SWT.NONE);
-        run.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        run.setText("Re-Position");
-        run.addSelectionListener(new SelectionListener() {
-
-          @Override
-          public void widgetSelected(SelectionEvent e) {
-            final ProgressMonitorDialog dialog = new ProgressMonitorDialog(
-                viewer.getControl().getShell());
-            dialog.setBlockOnOpen(false);
-            dialog.open();
-            dialog.getProgressMonitor()
-                .beginTask("Layouting tag cloud...", 100);
-            viewer.reset(dialog.getProgressMonitor(), false);
-            dialog.close();
-          }
-
-          @Override
-          public void widgetDefaultSelected(SelectionEvent e) {
-          }
-        });
-        Button layout = new Button(buttons, SWT.NONE);
-        layout.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        layout.setText("Re-Layout");
-        layout.addSelectionListener(new SelectionListener() {
-
-          @Override
-          public void widgetSelected(SelectionEvent e) {
-            ProgressMonitorDialog dialog = new ProgressMonitorDialog(viewer
-                .getControl().getShell());
-            dialog.setBlockOnOpen(false);
-            dialog.open();
-            dialog.getProgressMonitor()
-                .beginTask("Layouting tag cloud...", 200);
-            viewer.setInput(viewer.getInput(), dialog.getProgressMonitor());
-            viewer.reset(dialog.getProgressMonitor(), false);
-            dialog.close();
-          }
-
-          @Override
-          public void widgetDefaultSelected(SelectionEvent e) {
-          }
-        });
-        return buttons;
-      };
-
-    };
-    GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
-    options.setLayoutData(gd);
-  }
-
-  @Override
-  public void setFocus() {
-    viewer.getCloud().setFocus();
-  }
-
-  @Override
-  public void dispose() {
-    viewer.getCloud().dispose();
-    labelProvider.dispose();
-  }
-
-  public TagCloudViewer getViewer() {
-    return viewer;
-  }
-
+		
+//		cloud.setWords(Arrays.asList(
+//				createWord(labelProvider, "Hello", 50),
+//				createWord(labelProvider, "World", 100)), pm);
+//		
+//		cloud.layoutCloud(pm, true);
+//		cloud.zoomFit();
+		
+		viewer1.setInput(types, pm);
+		viewer2.setInput(types, pm);
+		viewer3.setInput(types, pm);
+	}
 }

@@ -13,7 +13,7 @@
 <repository location="http://download.eclipse.org/eclipse/updates/3.7"/>
 </location>
 <location includeAllPlatforms="false" includeMode="planner" type="InstallableUnit">
-<unit id="org.eclipse.draw2d.sdk.feature.group" version="3.7.0.v20110425-2050-7A7I-8yF4F18BBI4E8L558F38x42"/>
+<unit id="org.eclipse.draw2d.sdk.feature.group" />
 <repository location="http://download.eclipse.org/tools/gef/updates/releases"/>
 </location>
 <location includeAllPlatforms="false" includeMode="planner" type="InstallableUnit">

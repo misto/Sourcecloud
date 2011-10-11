@@ -118,7 +118,7 @@ public class OpenWithCloudio implements IObjectActionDelegate {
       IViewPart view = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
           .getActivePage().showView("ch.misto.sourcecloud.core.view1");
       
-      ((TagCloudViewPart) view).getViewer().setInput(types, pm);
+      ((TagCloudViewPart) view).setInput(types, pm);
 
     } catch (Exception e) {
       e.printStackTrace();
