@@ -3,7 +3,6 @@ package ch.misto.sourcecloud.core;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -11,6 +10,7 @@ import org.eclipse.egit.core.project.RepositoryMapping;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jgit.diff.RawText;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.lib.ObjectId;
@@ -48,10 +48,9 @@ public class VisualizeHistory implements IObjectActionDelegate {
 		Repository repository = mapping.getRepository();
 		Map<String, Ref> refs = repository.getAllRefs();
 
-		for (Entry<String, Ref> entry : refs.entrySet()) {
+		for (Ref ref : refs.values()) {
 			try {
-
-				ObjectId lastCommitId = entry.getValue().getObjectId();
+				ObjectId lastCommitId = ref.getObjectId();
 				RevWalk revWalk = new RevWalk(repository);
 				RevCommit commit = revWalk.parseCommit(lastCommitId);
 				RevTree tree = commit.getTree();
@@ -63,7 +62,9 @@ public class VisualizeHistory implements IObjectActionDelegate {
 				while (treeWalk.next()) {
 					ObjectId objectId = treeWalk.getObjectId(0);
 					ObjectLoader loader = repository.open(objectId);
-					loader.copyTo(System.out);
+					if (!RawText.isBinary(loader.getBytes())) {
+						loader.copyTo(System.out);
+					}
 				}
 
 			} catch (MissingObjectException e) {
