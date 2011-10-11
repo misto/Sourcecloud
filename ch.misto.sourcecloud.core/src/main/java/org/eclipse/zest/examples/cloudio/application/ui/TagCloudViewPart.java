@@ -8,6 +8,7 @@
  *******************************************************************************/
 package org.eclipse.zest.examples.cloudio.application.ui;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -18,6 +19,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.graphics.RGB;
@@ -46,46 +48,38 @@ public class TagCloudViewPart extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		Composite cloudComp = new Composite(parent, SWT.NONE);
+		ScrolledComposite cloudComp = new ScrolledComposite(parent,
+				SWT.H_SCROLL);
+		cloudComp.setExpandHorizontal(true);
+		cloudComp.setExpandVertical(true);
+		cloudComp.setMinWidth(1000);
+		final Composite c2 = new Composite(cloudComp, SWT.NONE);
+		cloudComp.setContent(c2);
+
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 3;
-		layout.horizontalSpacing = 0;
-		cloudComp.setLayout(layout);
+		layout.horizontalSpacing = 100;
+		c2.setLayout(layout);
+		c2.setBackground(c2.getDisplay().getSystemColor(SWT.COLOR_BLACK));
 
 		final ArrayList<Type> types = new ArrayList<Type>();
 		types.add(new Type(
 				"Use 'Create Tag Cloud' from the context menu to populate.", 1));
 
-//		cloud = new TagCloud(cloudComp, SWT.NONE);
-//		cloud.setLayouter(new DefaultLayouter(20, 10));
-//		labelProvider = new TypeLabelProvider() {
-//			{
-//				setColors(Arrays.asList(new RGB(1, 175, 255), new RGB(57, 99,
-//						213), new RGB(21, 49, 213), new RGB(30, 125, 42)));
-//				setFonts(Arrays.asList(cloud.getFont().getFontData()[0]));
-//			}
-//		};
-		
-		 viewer1 = createViewer(cloudComp);
-		 viewer2 = createViewer(cloudComp);
-		 viewer3 = createViewer(cloudComp);
-		 setInput(types, new NullProgressMonitor());
-	}
-
-	private Word createWord(final TypeLabelProvider labelProvider, String name, int occurrences) {
-		Type element = new Type(name, occurrences);
-		Word word = new Word(labelProvider.getLabel(element));
-		word.setColor(labelProvider.getColor(element));
-		word.weight = labelProvider.getWeight(element);
-		word.setFontData(labelProvider.getFontData(element));
-		word.angle = labelProvider.getAngle(element);
-		word.data = element;
-		return word;
+		viewer1 = createViewer(c2);
+		viewer2 = createViewer(c2);
+		viewer3 = createViewer(c2);
+		viewer1.setInput(types, new NullProgressMonitor());
 	}
 
 	private static TagCloudViewer createViewer(Composite parent) {
 		TagCloud cloud = new TagCloud(parent, SWT.NONE);
 		final TagCloudViewer viewer = new TagCloudViewer(cloud);
+
+		GridData gridData = new GridData();
+		gridData.widthHint = 300;
+		gridData.heightHint = 300;
+		cloud.setLayoutData(gridData);
 
 		cloud.setLayouter(new DefaultLayouter(20, 10));
 		final TypeLabelProvider labelProvider = new TypeLabelProvider();
@@ -158,25 +152,24 @@ public class TagCloudViewPart extends ViewPart {
 
 	@Override
 	public void setFocus() {
-		//viewer1.getCloud().setFocus();
+		// viewer1.getCloud().setFocus();
 	}
 
 	@Override
 	public void dispose() {
-		//viewer1.getCloud().dispose();
+		// viewer1.getCloud().dispose();
 		// labelProvider.dispose();
 	}
 
 	public void setInput(ArrayList<Type> types, IProgressMonitor pm) {
 
-		
-//		cloud.setWords(Arrays.asList(
-//				createWord(labelProvider, "Hello", 50),
-//				createWord(labelProvider, "World", 100)), pm);
-//		
-//		cloud.layoutCloud(pm, true);
-//		cloud.zoomFit();
-		
+		// cloud.setWords(Arrays.asList(
+		// createWord(labelProvider, "Hello", 50),
+		// createWord(labelProvider, "World", 100)), pm);
+		//
+		// cloud.layoutCloud(pm, true);
+		// cloud.zoomFit();
+
 		viewer1.setInput(types, pm);
 		viewer2.setInput(types, pm);
 		viewer3.setInput(types, pm);
