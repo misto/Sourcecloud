@@ -8,7 +8,6 @@
  *******************************************************************************/
 package org.eclipse.zest.examples.cloudio.application.ui;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -20,65 +19,51 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.zest.cloudio.TagCloud;
 import org.eclipse.zest.cloudio.TagCloudViewer;
-import org.eclipse.zest.cloudio.Word;
 import org.eclipse.zest.cloudio.layout.DefaultLayouter;
-import org.eclipse.zest.cloudio.layout.ILayouter;
-import org.eclipse.zest.examples.cloudio.application.data.Type;
 
 public class TagCloudViewPart extends ViewPart {
 
-	private TagCloudViewer viewer1;
-	private TagCloudViewer viewer2;
-	private TagCloudViewer viewer3;
-	private TagCloud cloud;
-	private TypeLabelProvider labelProvider;
+	private ArrayList<TagCloudViewer> viewers = new ArrayList<TagCloudViewer>();
+	private ScrolledComposite scrolledComposite;
 
 	public TagCloudViewPart() {
 	}
 
 	@Override
 	public void createPartControl(Composite parent) {
-		ScrolledComposite cloudComp = new ScrolledComposite(parent,
-				SWT.H_SCROLL);
-		cloudComp.setExpandHorizontal(true);
-		cloudComp.setExpandVertical(true);
-		cloudComp.setMinWidth(1000);
-		final Composite c2 = new Composite(cloudComp, SWT.NONE);
-		cloudComp.setContent(c2);
-
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 3;
-		layout.horizontalSpacing = 100;
-		c2.setLayout(layout);
-		c2.setBackground(c2.getDisplay().getSystemColor(SWT.COLOR_BLACK));
-
-		final ArrayList<Type> types = new ArrayList<Type>();
-		types.add(new Type(
-				"Use 'Create Tag Cloud' from the context menu to populate.", 1));
-
-		viewer1 = createViewer(c2);
-		viewer2 = createViewer(c2);
-		viewer3 = createViewer(c2);
-		viewer1.setInput(types, new NullProgressMonitor());
+		scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
+		scrolledComposite.setLayout(new GridLayout(1, true));
+		scrolledComposite.setExpandHorizontal(true);
+		scrolledComposite.setExpandVertical(true);
+		// scrolledComposite.setMinWidth(1000);
+		scrolledComposite.setAlwaysShowScrollBars(true);
 	}
 
 	private static TagCloudViewer createViewer(Composite parent) {
 		TagCloud cloud = new TagCloud(parent, SWT.NONE);
-		final TagCloudViewer viewer = new TagCloudViewer(cloud);
+		final TagCloudViewer viewer = new TagCloudViewer(cloud) {
+			@Override
+			protected void initMouseWheelListener() {
+			}
+		};
 
 		GridData gridData = new GridData();
 		gridData.widthHint = 300;
 		gridData.heightHint = 300;
+		gridData.minimumWidth = 300;
+		gridData.minimumHeight = 300;
+		gridData.grabExcessHorizontalSpace = true;
+		gridData.grabExcessVerticalSpace = true;
 		cloud.setLayoutData(gridData);
 
 		cloud.setLayouter(new DefaultLayouter(20, 10));
@@ -95,7 +80,7 @@ public class TagCloudViewPart extends ViewPart {
 				int max = Integer.MIN_VALUE, min = Integer.MAX_VALUE;
 
 				for (Object o : list) {
-					int occurrences = ((Type) o).getOccurrences();
+					int occurrences = ((CloudEntry) o).getOccurrences();
 					if (occurrences > max) {
 						max = occurrences;
 					} else if (occurrences < min) {
@@ -109,18 +94,17 @@ public class TagCloudViewPart extends ViewPart {
 
 			@Override
 			public void dispose() {
-
+				labelProvider.dispose();
 			}
 
 			@Override
 			public Object[] getElements(Object inputElement) {
-				Type[] types = ((List<?>) inputElement).toArray(new Type[0]);
-				Arrays.sort(types, new Comparator<Type>() {
+				CloudEntry[] types = ((List<?>) inputElement).toArray(new CloudEntry[0]);
+				Arrays.sort(types, new Comparator<CloudEntry>() {
 
 					@Override
-					public int compare(Type o1, Type o2) {
-						return - /* descending! */(o1.getOccurrences() - o2
-								.getOccurrences());
+					public int compare(CloudEntry o1, CloudEntry o2) {
+						return - /* descending! */(o1.getOccurrences() - o2.getOccurrences());
 					}
 				});
 
@@ -128,23 +112,9 @@ public class TagCloudViewPart extends ViewPart {
 			}
 		});
 
-		cloud.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		cloud.addControlListener(new ControlListener() {
-
-			@Override
-			public void controlResized(ControlEvent e) {
-				viewer.getCloud().zoomFit();
-			}
-
-			@Override
-			public void controlMoved(ControlEvent e) {
-			}
-		});
-
 		cloud.setMaxFontSize(100);
 		cloud.setMinFontSize(15);
-		labelProvider.setColors(Arrays.asList(new RGB(1, 175, 255), new RGB(57,
-				99, 213), new RGB(21, 49, 213), new RGB(30, 125, 42)));
+		labelProvider.setColors(Arrays.asList(new RGB(1, 175, 255), new RGB(57, 99, 213), new RGB(21, 49, 213), new RGB(30, 125, 42)));
 		labelProvider.setFonts(Arrays.asList(cloud.getFont().getFontData()[0]));
 		viewer.setMaxWords(50);
 		return viewer;
@@ -152,26 +122,71 @@ public class TagCloudViewPart extends ViewPart {
 
 	@Override
 	public void setFocus() {
-		// viewer1.getCloud().setFocus();
+		scrolledComposite.setFocus();
 	}
 
 	@Override
 	public void dispose() {
-		// viewer1.getCloud().dispose();
-		// labelProvider.dispose();
+		removeCloudViewers();
 	}
 
-	public void setInput(ArrayList<Type> types, IProgressMonitor pm) {
+	public void setInput(ArrayList<ArrayList<CloudEntry>> types, ArrayList<String> labels, IProgressMonitor pm) {
 
-		// cloud.setWords(Arrays.asList(
-		// createWord(labelProvider, "Hello", 50),
-		// createWord(labelProvider, "World", 100)), pm);
-		//
-		// cloud.layoutCloud(pm, true);
-		// cloud.zoomFit();
+		removeCloudViewers();
 
-		viewer1.setInput(types, pm);
-		viewer2.setInput(types, pm);
-		viewer3.setInput(types, pm);
+		Composite content = new Composite(scrolledComposite, SWT.NONE);
+		content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		scrolledComposite.setContent(content);
+		GridLayout layout = new GridLayout();
+		layout.horizontalSpacing = 50;
+		layout.numColumns = types.size();
+
+		content.setLayout(layout);
+		content.setBackground(content.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+
+		for (String l : labels) {
+			Label label = new Label(content, SWT.None);
+			label.setForeground(content.getDisplay().getSystemColor(SWT.COLOR_WHITE));
+			label.setBackground(content.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+			GridData gridData = new GridData();
+			gridData.horizontalAlignment = SWT.CENTER;
+			label.setLayoutData(gridData);
+			label.setText("" + l);
+		}
+
+		for (ArrayList<CloudEntry> cloudData : types) {
+			TagCloudViewer viewer = createViewer(content);
+			viewer.setInput(cloudData, pm);
+			viewers.add(viewer);
+			pm.worked(1);
+		}
+
+		scrolledComposite.setMinSize(content.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+
+		for (TagCloudViewer view : viewers) {
+			view.zoomFit();
+		}
+	}
+
+	private void removeCloudViewers() {
+		for (TagCloudViewer view : viewers) {
+			view.getCloud().dispose();
+		}
+
+		viewers.clear();
+	}
+
+	public static void showInView(final IProgressMonitor pm, final ArrayList<ArrayList<CloudEntry>> types, final ArrayList<String> labels) {
+		try {
+			IViewPart view = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+					.showView("ch.misto.sourcecloud.core.view1");
+
+			pm.beginTask("Creating Clouds:", types.size());
+			
+			((TagCloudViewPart) view).setInput(types, labels, pm);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

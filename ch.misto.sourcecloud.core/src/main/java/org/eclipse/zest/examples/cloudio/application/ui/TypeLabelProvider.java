@@ -21,7 +21,6 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.zest.cloudio.IEditableCloudLabelProvider;
-import org.eclipse.zest.examples.cloudio.application.data.Type;
 
 /**
  * 
@@ -50,12 +49,12 @@ public class TypeLabelProvider extends BaseLabelProvider implements
 
 	@Override
 	public String getLabel(Object element) {
-		return ((Type)element).getString();
+		return ((CloudEntry)element).getString();
 	}
 
 	@Override
 	public double getWeight(Object element) {
-		double count  = Math.log(((Type)element).getOccurrences() - minOccurrences+1);
+		double count  = Math.log(((CloudEntry)element).getOccurrences() - minOccurrences+1);
 		count /=(Math.log(maxOccurrences));
 		if(0 <= count && count <= 1)
 		  return count;
