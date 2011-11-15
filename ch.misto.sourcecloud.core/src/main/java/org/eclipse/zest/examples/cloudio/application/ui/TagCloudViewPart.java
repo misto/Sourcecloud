@@ -14,7 +14,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
@@ -45,7 +44,7 @@ public class TagCloudViewPart extends ViewPart {
 		scrolledComposite.setLayout(new GridLayout(1, true));
 		scrolledComposite.setExpandHorizontal(true);
 		scrolledComposite.setExpandVertical(true);
-		// scrolledComposite.setMinWidth(1000);
+		scrolledComposite.setMinWidth(1000);
 		scrolledComposite.setAlwaysShowScrollBars(true);
 	}
 
@@ -166,6 +165,9 @@ public class TagCloudViewPart extends ViewPart {
 		for (TagCloudViewer view : viewers) {
 			view.zoomFit();
 		}
+		
+		content.layout();
+		scrolledComposite.layout();
 	}
 
 	private void removeCloudViewers() {
