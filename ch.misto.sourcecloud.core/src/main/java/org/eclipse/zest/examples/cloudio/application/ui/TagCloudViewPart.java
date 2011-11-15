@@ -18,7 +18,6 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -51,14 +50,14 @@ public class TagCloudViewPart extends ViewPart {
 	private static TagCloudViewer createViewer(Composite parent) {
 		TagCloud cloud = new TagCloud(parent, SWT.NONE);
 		final TagCloudViewer viewer = new TagCloudViewer(cloud) {
-			@Override
-			protected void initMouseWheelListener() {
-			}
+//			@Override
+//			protected void initMouseWheelListener() {
+//			}
 		};
 
 		GridData gridData = new GridData();
-		gridData.widthHint = 300;
-		gridData.heightHint = 300;
+		gridData.widthHint = 500;
+		gridData.heightHint = 500;
 		gridData.minimumWidth = 300;
 		gridData.minimumHeight = 300;
 		gridData.grabExcessHorizontalSpace = true;
@@ -76,10 +75,10 @@ public class TagCloudViewPart extends ViewPart {
 				if (list == null || list.size() == 0)
 					return;
 
-				int max = Integer.MIN_VALUE, min = Integer.MAX_VALUE;
+				double max = Double.MIN_VALUE, min = Double.MAX_VALUE;
 
 				for (Object o : list) {
-					int occurrences = ((CloudEntry) o).getOccurrences();
+					double occurrences = ((CloudEntry) o).getValue();
 					if (occurrences > max) {
 						max = occurrences;
 					} else if (occurrences < min) {
@@ -103,7 +102,7 @@ public class TagCloudViewPart extends ViewPart {
 
 					@Override
 					public int compare(CloudEntry o1, CloudEntry o2) {
-						return - /* descending! */(o1.getOccurrences() - o2.getOccurrences());
+						return - /* descending! */(int) (o1.getValue() - o2.getValue());
 					}
 				});
 
@@ -113,9 +112,9 @@ public class TagCloudViewPart extends ViewPart {
 
 		cloud.setMaxFontSize(100);
 		cloud.setMinFontSize(15);
-		labelProvider.setColors(Arrays.asList(new RGB(1, 175, 255), new RGB(57, 99, 213), new RGB(21, 49, 213), new RGB(30, 125, 42)));
 		labelProvider.setFonts(Arrays.asList(cloud.getFont().getFontData()[0]));
 		viewer.setMaxWords(50);
+		viewer.getCloud().setBackground(viewer.getCloud().getDisplay().getSystemColor(SWT.COLOR_WHITE));
 		return viewer;
 	}
 
@@ -141,12 +140,12 @@ public class TagCloudViewPart extends ViewPart {
 		layout.numColumns = types.size();
 
 		content.setLayout(layout);
-		content.setBackground(content.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+		content.setBackground(content.getDisplay().getSystemColor(SWT.COLOR_WHITE));
 
 		for (String l : labels) {
 			Label label = new Label(content, SWT.None);
-			label.setForeground(content.getDisplay().getSystemColor(SWT.COLOR_WHITE));
-			label.setBackground(content.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+			//label.setForeground(content.getDisplay().getSystemColor(SWT.COLOR_WHITE));
+			label.setBackground(content.getDisplay().getSystemColor(SWT.COLOR_WHITE));
 			GridData gridData = new GridData();
 			gridData.horizontalAlignment = SWT.CENTER;
 			label.setLayoutData(gridData);
@@ -184,7 +183,7 @@ public class TagCloudViewPart extends ViewPart {
 					.showView("ch.misto.sourcecloud.core.view1");
 
 			pm.beginTask("Creating Clouds:", types.size());
-			
+
 			((TagCloudViewPart) view).setInput(types, labels, pm);
 
 		} catch (Exception e) {

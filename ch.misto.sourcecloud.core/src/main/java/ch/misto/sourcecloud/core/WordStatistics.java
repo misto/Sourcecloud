@@ -82,15 +82,15 @@ public class WordStatistics {
 		}
 		return words;
 	}
-
-	public static ArrayList<CloudEntry> mapToInputElements(final Map<String, Integer> stats) {
-		final ArrayList<CloudEntry> types = new ArrayList<CloudEntry>();
-
-		for (Entry<String, Integer> e : stats.entrySet()) {
-			types.add(new CloudEntry(e.getKey(), e.getValue()));
-		}
-		return types;
-	}
+//
+//	public static ArrayList<CloudEntry> mapToInputElements(final Map<String, Integer> stats) {
+//		final ArrayList<CloudEntry> types = new ArrayList<CloudEntry>();
+//
+//		for (Entry<String, Integer> e : stats.entrySet()) {
+//			types.add(new CloudEntry(e.getKey(), e.getValue()));
+//		}
+//		return types;
+//	}
 
 	public static void reduce(final ArrayList<String> words, final Map<String, Integer> stats) {
 		for (String w : words) {
