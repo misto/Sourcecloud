@@ -58,7 +58,9 @@ public class GitRepoAccess {
 			treeWalk.addTree(tree);
 
 			while (treeWalk.next()) {
-				result.add(treeWalk.getObjectId(0));
+				if(treeWalk.getPathString().endsWith("java")) {
+					result.add(treeWalk.getObjectId(0));
+				}
 			}
 
 		} catch (MissingObjectException e) {

@@ -113,7 +113,7 @@ public class TagCloudViewPart extends ViewPart {
 		cloud.setMaxFontSize(100);
 		cloud.setMinFontSize(15);
 		labelProvider.setFonts(Arrays.asList(cloud.getFont().getFontData()[0]));
-		viewer.setMaxWords(50);
+		viewer.setMaxWords(30);
 		viewer.getCloud().setBackground(viewer.getCloud().getDisplay().getSystemColor(SWT.COLOR_WHITE));
 		return viewer;
 	}

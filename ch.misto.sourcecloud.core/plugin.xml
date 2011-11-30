@@ -15,20 +15,6 @@
          point="org.eclipse.ui.popupMenus">
       <objectContribution
             adaptable="true"
-            id="ch.misto.sourcecloud.core.contribution.open"
-            objectClass="org.eclipse.core.resources.IResource">
-         <action
-               class="ch.misto.sourcecloud.core.OpenWithCloudio"
-               id="ch.misto.sourcecloud.core.openaction1"
-               label="Create Tag Cloud">
-         </action>
-      </objectContribution>
-   </extension>
-
-   <extension
-         point="org.eclipse.ui.popupMenus">
-      <objectContribution
-            adaptable="true"
             id="ch.misto.sourcecloud.core.contribution.visualize"
             objectClass="org.eclipse.core.resources.IProject">
          <action
@@ -38,5 +24,4 @@
          </action>
       </objectContribution>
    </extension>
-
 </plugin>

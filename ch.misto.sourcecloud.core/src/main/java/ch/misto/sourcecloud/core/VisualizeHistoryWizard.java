@@ -42,17 +42,35 @@ public class VisualizeHistoryWizard extends Wizard {
 		setWindowTitle("Visualize History");
 	}
 
+	public interface DataChanged {
+		public void apply(String[] data);
+	}
+
 	@Override
 	public void addPages() {
-		addPage(new SelectVersionsWizardPage(project, new SelectionAdapter() {
+
+		final ArrangeVersionsWizardPage arrangeVersionsPage = new ArrangeVersionsWizardPage(new DataChanged() {
+
+			@Override
+			public void apply(String[] data) {
+				selectedTags.clear();
+				selectedTags.addAll(Arrays.asList(data));
+			}
+		});
+
+		final SelectVersionsWizardPage selectVersionsPage = new SelectVersionsWizardPage(project, new SelectionAdapter() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				String[] selection = ((List) e.widget).getSelection();
+				arrangeVersionsPage.setData(selection);
 				selectedTags.clear();
 				selectedTags.addAll(Arrays.asList(selection));
 			}
-		}));
+		});
+
+		addPage(selectVersionsPage);
+		addPage(arrangeVersionsPage);
 	}
 
 	@Override
@@ -81,19 +99,22 @@ public class VisualizeHistoryWizard extends Wizard {
 		for (int i = 1; i < termsForEachTag.size(); i++) {
 
 			final Terms currentTerms = termsForEachTag.get(i);
-			final Terms allTerms = new Terms(currentTerms, termsForEachTag.get(i - 1));
+			final Terms currentAndPreviousTerms = new Terms(currentTerms, termsForEachTag.get(i - 1));
 
 			final ArrayList<CloudEntry> entries = new ArrayList<CloudEntry>();
 
 			for (String t : currentTerms.elementSet()) {
 
-				LogLikelihood logLikelihood = new LogLikelihood(currentTerms, allTerms, t);
+				LogLikelihood logLikelihood = new LogLikelihood(currentTerms, currentAndPreviousTerms, t);
 				System.out.println(String.format("«%s» has a value of %f", t, logLikelihood.value()));
-				RGB rgb = logLikelihood.value() < 0 ? new RGB(107, 0, 29) : new RGB(0, 74, 112);
-				if (t.equals("0")) {
-					System.out.println(t);
+
+				boolean isOverThreshold = Math.abs(logLikelihood.value()) > 0.0001D;
+				boolean isNotNumber = !t.matches("\\d+");
+
+				if (isOverThreshold && isNotNumber) {
+					RGB rgb = logLikelihood.value() < 0 ? new RGB(107, 0, 29) : new RGB(0, 74, 112);
+					entries.add(new CloudEntry(t, Math.abs(logLikelihood.value()), new Color(Display.getDefault(), rgb)));
 				}
-				entries.add(new CloudEntry(t, Math.abs(logLikelihood.value()), new Color(Display.getDefault(), rgb)));
 			}
 
 			labels.add(selectedTags.get(i - 1) + " → " + selectedTags.get(i));

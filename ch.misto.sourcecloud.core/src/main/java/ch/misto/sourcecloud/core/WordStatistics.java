@@ -73,7 +73,11 @@ public class WordStatistics {
 			while ((line = reader.readLine()) != null) {
 				Matcher matcher = PATTERN.matcher(line);
 				while (matcher.find()) {
-					words.add(matcher.group());
+					String word = matcher.group();
+					// http://stackoverflow.com/questions/7593969/regex-to-split-camelcase-or-titlecase-advanced
+					for (String w : word.split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])")) {
+						words.add(w);
+					}
 				}
 			}
 
@@ -82,15 +86,17 @@ public class WordStatistics {
 		}
 		return words;
 	}
-//
-//	public static ArrayList<CloudEntry> mapToInputElements(final Map<String, Integer> stats) {
-//		final ArrayList<CloudEntry> types = new ArrayList<CloudEntry>();
-//
-//		for (Entry<String, Integer> e : stats.entrySet()) {
-//			types.add(new CloudEntry(e.getKey(), e.getValue()));
-//		}
-//		return types;
-//	}
+
+	//
+	// public static ArrayList<CloudEntry> mapToInputElements(final Map<String,
+	// Integer> stats) {
+	// final ArrayList<CloudEntry> types = new ArrayList<CloudEntry>();
+	//
+	// for (Entry<String, Integer> e : stats.entrySet()) {
+	// types.add(new CloudEntry(e.getKey(), e.getValue()));
+	// }
+	// return types;
+	// }
 
 	public static void reduce(final ArrayList<String> words, final Map<String, Integer> stats) {
 		for (String w : words) {
