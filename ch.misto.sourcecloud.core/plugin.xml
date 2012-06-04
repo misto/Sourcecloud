@@ -15,14 +15,13 @@
          point="org.eclipse.ui.popupMenus">
       <objectContribution
             adaptable="true"
-            id="ch.misto.sourcecloud.core.contribution.open"
-            objectClass="org.eclipse.core.resources.IResource">
+            id="ch.misto.sourcecloud.core.contribution.visualize"
+            objectClass="org.eclipse.core.resources.IProject">
          <action
-               class="ch.misto.sourcecloud.core.OpenWithCloudio"
-               id="ch.misto.sourcecloud.core.openaction1"
-               label="Create Tag Cloud">
+               class="ch.misto.sourcecloud.core.VisualizeHistory"
+               id="ch.misto.sourcecloud.core.visualizeaction1"
+               label="Visualize History">
          </action>
       </objectContribution>
    </extension>
-
 </plugin>
