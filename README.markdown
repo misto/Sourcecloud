@@ -26,7 +26,7 @@ presentation at Jazoon 2010.
 
 ## Installation
 
-There's an [update site for integration builds](http://scala.ifs.hsr.ch/hudson/job/Sourcecloud/ws/ch.misto.sourcecloud.update/target/site/) (no release has been made yet).
+There's an [update site for integration builds](http://geometa.hsr.ch/hudson/job/Sourcecloud/ws/ch.misto.sourcecloud.update/target/site/) (no release has been made yet).
 Note that you need at least Eclipse Indigo (3.7). The update site includes the
 needed Cloudio/Zest plug-ins.
 
