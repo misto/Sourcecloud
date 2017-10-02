@@ -10,8 +10,8 @@ occurs in the source code.
 Here are some examples:
 
 * [Debug Visualisation Plugin for Eclipse](http://cubussapiens.hu/2011/09/source-code-visualisation-for-my-projects/)
-* [Scala Refactoring source code.](https://github.com/misto/Sourcecloud/blob/master/examples/refactorings.png)
-* [Simple Lambda Calculus parser and evaluato.r](https://github.com/misto/Sourcecloud/blob/master/examples/untyped.png)
+* [Scala Refactoring source code](https://github.com/misto/Sourcecloud/blob/master/examples/refactorings.png)
+* [Simple Lambda Calculus parser and evaluator](https://github.com/misto/Sourcecloud/blob/master/examples/untyped.png)
 
 ## Why would you want to make tag clouds for source code?
 
